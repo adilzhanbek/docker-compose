@@ -1,0 +1,33 @@
+- name: install mongodb
+  hosts: mongodb
+  become: true
+  tasks:
+  - import_role:
+      name: geerlingguy.docker
+  
+  - import_role:
+      name: geerlingguy.pip
+
+  - name: Create mongodb directory
+    ansible.builtin.file:
+      path: /opt/mongodb
+      state: directory
+      mode: '0755'
+
+  - name: Copy airflow docker-compose files
+    ansible.builtin.copy:
+      src: files/mongodb/
+      dest: /opt/mongodb
+
+  - name: Create and start airflow services
+    community.docker.docker_compose:
+      project_src: /opt/mongo
+    register: output
+
+  - name: Update repositories cache and install "webhook" package
+    ansible.builtin.apt:
+      name: webhook
+      update_cache: yes
+
+  - ansible.builtin.debug:
+      var: output
