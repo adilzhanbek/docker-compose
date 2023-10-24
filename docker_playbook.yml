@@ -1,0 +1,32 @@
+
+---
+- name: Install Docker and Docker Compose, and copy docker-compose.yml from GitHub
+  hosts: 34.118.14.102
+  become: true
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: 'yes'
+      tags: install
+
+    - name: Install Docker Compose
+      get_url:
+       url: "https://github.com/docker/compose/releases/download/2.19.1/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+      when: ansible_system == "Linux"
+
+    - name: Copy docker-compose.yml from GitHub
+      get_url:
+        url: https://raw.githubusercontent.com/sonyarianto/docker-compose-mongodb/master/docker-compose.yml
+        dest: /home/gary/docker-compose.yml
+      when: ansible_system == "Linux"
+
+    - name: Start Docker Compose Service
+      command: docker-compose -f /home/gary/docker-compose.yml up -d
+      args:
+        chdir: /home/gary/
+      when: ansible_system == "Linux"
+

@@ -1,0 +1,36 @@
+version: '3.3'
+
+# Usage:
+#   docker stack deploy -c stack.yml mongo
+# or 
+#   docker-compose -f stack.yml up
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo-docker
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: mongoadmin
+      #MONGODB_AUTH_DATABASE: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./workspace:/workspace
+      - type: volume
+        source: mongodb_data_volume
+        target: /data/db
+
+  mongodb-exporter:
+    image: percona/mongodb_exporter:0.39.0
+    command:  --mongodb.uri=mongodb://mongoadmin:mongoadmin@mongo:27017 --web.listen-address=":9100" --web.telemetry-path="/metrics"
+    restart: always
+    ports: 
+      - 9100:9100
+
+
+volumes:
+  mongodb_data_volume:
+    driver: local
