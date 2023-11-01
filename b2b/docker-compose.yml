@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:
+
+  b2b_mongo:
+    image: mongo
+    restart: always
+    container_name: b2b_mongo-docker
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: dbadmin
+      MONGO_INITDB_ROOT_PASSWORD: NqC9XNw8LAfo1Naixt55WdTj
+      #MONGODB_AUTH_DATABASE: admin
+    ports:
+      - "27018:27018"
+    volumes:
+      - ./workspace:/workspace
+      - type: volume
+        source: b2b_mongodb_data_volume
+        target: /data/db
+
+  b2b_mongodb-exporter:
+    image: percona/mongodb_exporter:0.39.0
+    command:  --mongodb.uri=mongodb://dbadmin:NqC9XNw8LAfo1Naixt55WdTj@mongo:27018 --compatible-mode --web.listen-address=":9217" --web.telemetry-path="/metrics"
+    restart: always
+    ports: 
+      - 9217:9217  
+
+volumes:
+  b2b_mongodb_data_volume:
+    driver: local

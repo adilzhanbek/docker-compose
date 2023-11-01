@@ -1,10 +1,5 @@
 version: '3.3'
 
-# Usage:
-#   docker stack deploy -c stack.yml mongo
-# or 
-#   docker-compose -f stack.yml up
-
 services:
 
   mongo:
@@ -25,10 +20,10 @@ services:
 
   mongodb-exporter:
     image: percona/mongodb_exporter:0.39.0
-    command:  --mongodb.uri=mongodb://mongoadmin:mongoadmin@mongo:27017 --web.listen-address=":9100" --web.telemetry-path="/metrics"
+    command:  --mongodb.uri=mongodb://mongoadmin:mongoadmin@mongo:27017 --web.listen-address=":9216" --web.telemetry-path="/metrics"
     restart: always
     ports: 
-      - 9100:9100
+      - 9216:9216
 
 
 volumes:
